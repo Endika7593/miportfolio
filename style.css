@@ -1,0 +1,80 @@
+/* Estilos generales */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: Arial, sans-serif;
+    transition: background-color 0.5s ease;
+    overflow-x: hidden;
+  }
+  
+  #portfolio {
+    padding: 20px;
+    text-align: center;
+  }
+  
+  /* Versión normal */
+  .normal-theme {
+    background: url('assets/background-normal.jpg') no-repeat center center fixed;
+    background-size: cover;
+    color: white;
+  }
+  
+  .matrix-theme {
+    background: black;
+    color: green;
+    font-family: 'Courier New', monospace;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .matrix-theme::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('assets/matrix-background.gif') no-repeat center center fixed;
+    opacity: 0.8;
+    pointer-events: none;
+  }
+  
+  /* Diseño móvil primero */
+  @media screen and (max-width: 768px) {
+    .theme-toggle {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+    }
+  
+    .choose-theme {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      gap: 20px;
+    }
+  
+    .pill {
+      padding: 10px 20px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+  
+    .pill.red {
+      background-color: red;
+      color: white;
+    }
+  
+    .pill.blue {
+      background-color: blue;
+      color: white;
+    }
+  }
+  
