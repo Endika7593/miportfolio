@@ -1,34 +1,219 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mi Portfolio</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Portfolio</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Estilos generales */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            transition: background-color 0.5s ease;
+            overflow-x: hidden;
+            height: 100%;
+        }
+
+        #portfolio {
+            padding: 20px;
+            text-align: center;
+        }
+
+        /* Versión normal */
+        .normal-theme {
+            background: url('assets/background-normal.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+            position: relative;
+        }
+
+        /* Estilos de Matrix */
+        .matrix-theme {
+            background: black;
+            color: green;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .matrix-theme::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('assets/matrix-background.gif') no-repeat center center fixed;
+            opacity: 0.8;
+            pointer-events: none;
+        }
+
+        /* Diseño móvil primero */
+        @media screen and (max-width: 768px) {
+            .theme-toggle {
+                position: fixed;
+                top: 20px;
+                left: 20px;
+            }
+
+            .choose-theme {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                display: flex;
+                gap: 20px;
+            }
+
+            .pill {
+                padding: 10px 20px;
+                border-radius: 20px;
+                cursor: pointer;
+                font-weight: bold;
+            }
+
+            .pill.red {
+                background-color: red;
+                color: white;
+            }
+
+            .pill.blue {
+                background-color: blue;
+                color: white;
+            }
+        }
+
+        /* Canvas de Matrix */
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+    </style>
 </head>
 <body>
-  <!-- Botón para cambiar entre versiones -->
-  <div class="theme-toggle">
-    <button id="toggleButton" class="btn">Cambiar Tema</button>
-  </div>
 
-  <!-- Pantalla inicial para elegir la "pastilla" -->
-  <div id="chooseTheme" class="choose-theme">
-    <div class="pill red" onclick="chooseRed()">Pastilla Roja</div>
-    <div class="pill blue" onclick="chooseBlue()">Pastilla Azul</div>
-  </div>
+    <!-- Botón para cambiar entre versiones -->
+    <div class="theme-toggle">
+        <button id="toggleButton" class="btn">Cambiar Tema</button>
+    </div>
 
-  <div id="portfolio" class="portfolio">
-    <header>
-      <h1>Bienvenido a Mi Portfolio</h1>
-      <p>¡Aquí encontrarás todo sobre mis proyectos!</p>
-    </header>
-    <section>
-      <h2>Mis Proyectos</h2>
-      <!-- Agrega aquí tus proyectos -->
+    <!-- Pantalla inicial para elegir la "pastilla" -->
+    <div id="chooseTheme" class="choose-theme">
+        <div class="pill red" onclick="chooseRed()">Pastilla Roja</div>
+        <div class="pill blue" onclick="chooseBlue()">Pastilla Azul</div>
+    </div>
+
+    <div id="portfolio" class="portfolio normal-theme">
+        <header>
+            <h1>Bienvenido a Mi Portfolio</h1>
+            <p>¡Aquí encontrarás todo sobre mis proyectos!</p>
+        </header>
+        <section>
+            <h2>Mis Proyectos</h2>
+            <!-- Agrega aquí tus proyectos -->
+        </section>
+    </div>
+
+    <!-- Canvas para el fondo de Matrix -->
+    <canvas id="canv" width="500" height="500"></canvas>
+
+    <!-- Imágenes y contenido -->
+    <section id="sectionfotos">
+        <div class="article-container">
+            <article id="elrondsmith">
+                <img id="elrond" src="elrond.jpg" alt="elrond">
+                <img id="smith" src="agent_smith.png" alt="smith">
+            </article>
+        </div>
     </section>
-  </div>
 
-  <script src="script.js"></script>
+    <script>
+        // Funciones para cambiar entre fondos
+        const portfolio = document.getElementById('portfolio');
+        const chooseThemeScreen = document.getElementById('chooseTheme');
+        const toggleButton = document.getElementById('toggleButton');
+        const canvas = document.getElementById("canv");
+        const ctx = canvas.getContext("2d");
+
+        // Establece el tamaño del canvas para llenar toda la pantalla
+        const w = canvas.width = window.innerWidth;
+        const h = canvas.height = window.innerHeight;
+
+        // Inicializa las columnas para la lluvia de letras
+        const cols = Math.floor(w / 20) + 1;
+        const ypos = Array(cols).fill(0);
+
+        // Función para dibujar la lluvia de letras (Matrix)
+        function matrix() {
+            ctx.fillStyle = "#0001";
+            ctx.fillRect(0, 0, w, h);
+            ctx.fillStyle = "#0f0";
+            ctx.font = "15pt elvish-ring-nfi-font";
+
+            ypos.forEach((y, ind) => {
+                const text = String.fromCharCode(Math.random() * 128);
+                const x = ind * 20;
+                ctx.fillText(text, x, y);
+
+                if (y > 100 + Math.random() * 10000) ypos[ind] = 0;
+                else ypos[ind] = y + 20;
+            });
+        }
+
+        // Cambiar entre fondos al hacer clic en el botón
+        document.addEventListener('DOMContentLoaded', function () {
+            if (!localStorage.getItem('themeChosen')) {
+                chooseThemeScreen.style.display = 'flex';
+            } else {
+                const theme = localStorage.getItem('themeChosen');
+                applyTheme(theme);
+            }
+
+            toggleButton.addEventListener('click', function () {
+                const currentTheme = portfolio.classList.contains('normal-theme') ? 'normal' : 'matrix';
+                if (currentTheme === 'normal') {
+                    applyTheme('matrix');
+                } else {
+                    applyTheme('normal');
+                }
+            });
+        });
+
+        // Funciones de la pastilla
+        function chooseRed() {
+            localStorage.setItem('themeChosen', 'matrix');
+            applyTheme('matrix');
+            chooseThemeScreen.style.display = 'none';
+        }
+
+        function chooseBlue() {
+            localStorage.setItem('themeChosen', 'normal');
+            applyTheme('normal');
+            chooseThemeScreen.style.display = 'none';
+        }
+
+        // Aplica el tema seleccionado
+        function applyTheme(theme) {
+            if (theme === 'matrix') {
+                portfolio.classList.add('matrix-theme');
+                portfolio.classList.remove('normal-theme');
+                canvas.style.display = 'block';  // Muestra el canvas para la lluvia de letras
+                setInterval(matrix, 90);  // Inicia la animación de Matrix
+            } else {
+                portfolio.classList.add('normal-theme');
+                portfolio.classList.remove('matrix-theme');
+                canvas.style.display = 'none';  // Oculta el canvas cuando no es Matrix
+            }
+        }
+    </script>
 </body>
 </html>
